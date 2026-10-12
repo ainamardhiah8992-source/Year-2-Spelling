@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Year 2 Word Quest!</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --secondary-color: #FF9800;
+      --bg-color: #E0F7FA;
+      --card-bg: #FFFFFF;
+      --text-color: #2D3748;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka', cursive, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-container {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      border: 4px solid #B2EBF2;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background: #FFF9C4;
+      padding: 12px 20px;
+      border-radius: 16px;
+    }
+
+    .unit-tag {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #D81B60;
+    }
+
+    .score-board {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2E7D32;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: #E0E0E0;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .question-box {
+      margin-bottom: 20px;
+      background: #EBF8FF;
+      padding: 16px;
+      border-radius: 16px;
+      border: 2px dashed #90CDF4;
+    }
+
+    .clue-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #3182CE;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .clue {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #2B6CB0;
+      margin: 0;
+    }
+
+    /* Restored Word Pattern Clue Style */
+    .word-pattern-box {
+      margin: 15px 0 10px 0;
+    }
+
+    .pattern-title {
+      font-size: 0.85rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .word-pattern {
+      font-size: 2.2rem;
+      letter-spacing: 8px;
+      font-weight: bold;
+      color: #E53E3E;
+    }
+
+    .input-box {
+      font-size: 1.8rem;
+      padding: 10px 16px;
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
+      border: 3px solid #FFB74D;
+      border-radius: 16px;
+      outline: none;
+      text-transform: lowercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      background: #FFF;
+    }
+
+    .btn {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      font-size: 1.3rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px #F57C00;
+      transition: all 0.1s ease;
+    }
+
+    .btn:active {
+      box-shadow: 0 0 #F57C00;
+      transform: translateY(4px);
+    }
+
+    .btn:disabled {
+      background-color: #CBD5E0;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* On-Screen Keyboard Styles */
+    .keyboard-container {
+      margin-top: 20px;
+      border-top: 2px dashed #E2E8F0;
+      padding-top: 15px;
+    }
+
+    .keyboard-title {
+      font-size: 0.8rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .key-btn {
+      background: #EDF2F7;
+      border: 2px solid #CBD5E0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #2D3748;
+      cursor: pointer;
+      min-width: 36px;
+      box-shadow: 0 2px #A0AEC0;
+      user-select: none;
+    }
+
+    .key-btn:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    .key-btn.backspace {
+      background: #FED7D7;
+      border-color: #FEB2B2;
+      color: #C53030;
+      min-width: 50px;
+    }
+
+    .feedback {
+      height: 35px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .correct { color: #38A169; }
+    .incorrect { color: #E53E3E; }
+
+    .end-screen {
+      display: none;
+    }
+
+    .end-screen h2 {
+      font-size: 2rem;
+      color: #8E24AA;
+    }
+
+    .final-score {
+      font-size: 3.5rem;
+      color: #38A169;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+
+    .badge-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #DD6B20;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-container">
+  <!-- Active Game Screen -->
+  <div id="play-screen">
+    <div class="header">
+      <div class="unit-tag" id="unit-title">Unit 1</div>
+      <div class="score-board">Score: <span id="score">0</span> / 20</div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <!-- Clue Box -->
+    <div class="question-box">
+      <div class="clue-title">💡 Clue</div>
+      <div class="clue" id="clue-text">Clue goes here</div>
+    </div>
+
+    <!-- Letter Pattern Clue Box -->
+    <div class="word-pattern-box">
+      <div class="pattern-title">Missing Letters Pattern:</div>
+      <div class="word-pattern" id="word-pattern">M o _ _ a _</div>
+    </div>
+
+    <form id="answer-form" onsubmit="checkAnswer(event)">
+      <input type="text" id="user-input" class="input-box" autocomplete="off" placeholder="type here..." autofocus>
+      <br>
+      <button type="submit" id="submit-btn" class="btn">SUBMIT 🚀</button>
+    </form>
+
+    <div class="feedback" id="feedback"></div>
+
+    <!-- On-Screen Keyboard -->
+    <div class="keyboard-container">
+      <div class="keyboard-title">Tap letters to type:</div>
+      <div class="keyboard-row">
+        <button type="button" class="key-btn" onclick="typeLetter('q')">q</button>
+        <button type="button" class="key-btn" onclick="typeLetter('w')">w</button>
+        <button type="button" class="key-btn" onclick="typeLetter('e')">e</button>
+        <button type="button" class="key-btn" onclick="typeLetter('r')">r</button>
+        <button type="button" class="key-btn" onclick="typeLetter('t')">t</button>
+        <button type="button" class="key-btn" onclick="typeLetter('y')">y</button>
+        <button type="button" class="key-btn" onclick="typeLetter('u')">u</button>
+        <button type="button" class="key-btn" onclick="typeLetter('i')">i</button>
+        <button type="button" class="key-btn" onclick="typeLetter('o')">o</button>
+        <button type="button" class="key-btn" onclick="typeLetter('p')">p</button>
+      </div>
+      <div class="keyboard-row">
+        <button type="button" class="key-btn" onclick="typeLetter('a')">a</button>
+        <button type="button" class="key-btn" onclick="typeLetter('s')">s</button>
+        <button type="button" class="key-btn" onclick="typeLetter('d')">d</button>
+        <button type="button" class="key-btn" onclick="typeLetter('f')">f</button>
+        <button type="button" class="key-btn" onclick="typeLetter('g')">g</button>
+        <button type="button" class="key-btn" onclick="typeLetter('h')">h</button>
+        <button type="button" class="key-btn" onclick="typeLetter('j')">j</button>
+        <button type="button" class="key-btn" onclick="typeLetter('k')">k</button>
+        <button type="button" class="key-btn" onclick="typeLetter('l')">l</button>
+      </div>
+      <div class="keyboard-row">
+        <button type="button" class="key-btn" onclick="typeLetter('z')">z</button>
+        <button type="button" class="key-btn" onclick="typeLetter('x')">x</button>
+        <button type="button" class="key-btn" onclick="typeLetter('c')">c</button>
+        <button type="button" class="key-btn" onclick="typeLetter('v')">v</button>
+        <button type="button" class="key-btn" onclick="typeLetter('b')">b</button>
+        <button type="button" class="key-btn" onclick="typeLetter('n')">n</button>
+        <button type="button" class="key-btn" onclick="typeLetter('m')">m</button>
+        <button type="button" class="key-btn backspace" onclick="backspace()">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Game Screen -->
+  <div id="end-screen" class="end-screen">
+    <h2>🎉 Awesome Job! 🎉</h2>
+    <p style="font-size: 1.2rem;">You finished the challenge!</p>
+    <div>Your Final Score:</div>
+    <div class="final-score"><span id="final-score">0</span> / 20</div>
+    <div class="badge-text" id="badge-text">Super Speller!</div>
+    <button class="btn" onclick="restartGame()">PLAY AGAIN 🔄</button>
+  </div>
+</div>
+
+<script>
+  // Game Content - Year 2 Questions
+  const questions = [
+    { unit: "Unit 1: Days of the Week", clue: "The first day of the school week.", pattern: "M o _ _ a _", answer: "monday" },
+    { unit: "Unit 1: Actions", clue: "You use your feet to move quickly.", pattern: "r u _", answer: "run" },
+    { unit: "Unit 1: Sports", clue: "You kick this ball with your feet.", pattern: "f _ _ t _ _ _ _", answer: "football" },
+    { unit: "Unit 1: Music", clue: "You play this musical instrument using black and white keys.", pattern: "p i _ _ o", answer: "piano" },
+    
+    { unit: "Unit 2: My House", clue: "You sleep in this room.", pattern: "b e _ _ o _ _", answer: "bedroom" },
+    { unit: "Unit 2: My House", clue: "You cook food in this room.", pattern: "k i _ _ h _ _", answer: "kitchen" },
+    { unit: "Unit 2: My House", clue: "You open this to enter or leave a room.", pattern: "d o _ r", answer: "door" },
+    { unit: "Unit 2: My House", clue: "You can look outside through this.", pattern: "w _ _ _ o _", answer: "window" },
+    
+    { unit: "Unit 3: Clothes", clue: "You wear these on your feet inside your shoes.", pattern: "s o _ k _", answer: "socks" },
+    { unit: "Unit 3: Clothes", clue: "You wear this on your head.", pattern: "c _ _", answer: "cap" },
+    { unit: "Unit 3: Clothes", clue: "You wear these on your legs.", pattern: "t r _ u _ _ _ s", answer: "trousers" },
+    { unit: "Unit 3: Clothes", clue: "This is a one-piece item of clothing.", pattern: "d r _ s _", answer: "dress" },
+    
+    { unit: "Unit 4: My Body", clue: "You use this part of your body to think.", pattern: "h e _ d", answer: "head" },
+    { unit: "Unit 4: My Body", clue: "You use these to hold things.", pattern: "h _ _ d _", answer: "hands" },
+    { unit: "Unit 4: My Body", clue: "This body part connects your leg to your foot.", pattern: "a n _ l _", answer: "ankle" },
+    { unit: "Unit 4: My Body", clue: "You use these to see.", pattern: "e _ _ s", answer: "eyes" },
+    
+    { unit: "Unit 5: At the Beach", clue: "You build this with sand at the beach.", pattern: "s a _ d c _ _ t _ e", answer: "sandcastle" },
+    { unit: "Unit 5: At the Beach", clue: "You can find these on the beach. They have hard outer coverings.", pattern: "s _ _ l _ _", answer: "shells" },
+    { unit: "Unit 5: At the Beach", clue: "You take this to keep a memory of your holiday.", pattern: "p h _ t _", answer: "photo" },
+    { unit: "Unit 5: At the Beach", clue: "You wear these to protect your eyes from the sun at the beach.", pattern: "s u _ g _ _ _ _ _ _", answer: "sunglasses" }
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+
+  // Sound Effects using Web Audio API
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  
+  function playSound(type) {
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'correct') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    } else {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(140, audioCtx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    }
+  }
+
+  function typeLetter(letter) {
+    const input = document.getElementById('user-input');
+    if (!input.disabled) {
+      input.value += letter;
+      input.focus();
+    }
+  }
+
+  function backspace() {
+    const input = document.getElementById('user-input');
+    if (!input.disabled) {
+      input.value = input.value.slice(0, -1);
+      input.focus();
+    }
+  }
+
+  function loadQuestion() {
+    const q = questions[currentIndex];
+    document.getElementById('unit-title').innerText = `${q.unit} (${currentIndex + 1}/20)`;
+    document.getElementById('clue-text').innerText = q.clue;
+    document.getElementById('word-pattern').innerText = q.pattern;
+    document.getElementById('user-input').value = '';
+    document.getElementById('feedback').innerText = '';
+    document.getElementById('user-input').disabled = false;
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('user-input').focus();
+    
+    // Update progress bar
+    const progressPercent = (currentIndex / questions.length) * 100;
+    document.getElementById('progress').style.width = progressPercent + '%';
+  }
+
+  function checkAnswer(e) {
+    e.preventDefault();
+    const input = document.getElementById('user-input').value.trim().toLowerCase();
+    const currentQ = questions[currentIndex];
+    const feedback = document.getElementById('feedback');
+
+    if (!input) return;
+
+    // Lock input during transition
+    document.getElementById('user-input').disabled = true;
+    document.getElementById('submit-btn').disabled = true;
+
+    // Remove spaces for checking
+    const normalizedAnswer = currentQ.answer.toLowerCase().replace(/\s+/g, '');
+    const normalizedInput = input.replace(/\s+/g, '');
+
+    if (normalizedInput === normalizedAnswer) {
+      playSound('correct');
+      score++;
+      document.getElementById('score').innerText = score;
+      feedback.className = 'feedback correct';
+      feedback.innerText = '🌟 Great Job! 🌟';
+    } else {
+      playSound('incorrect');
+      feedback.className = 'feedback incorrect';
+      feedback.innerText = `❌ Correct answer: ${currentQ.answer}`;
+    }
+
+    // Auto-advance after 1.8s
+    setTimeout(() => {
+      nextQuestion();
+    }, 1800);
+  }
+
+  function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      loadQuestion();
+    } else {
+      showEndScreen();
+    }
+  }
+
+  function showEndScreen() {
+    document.getElementById('play-screen').style.display = 'none';
+    document.getElementById('end-screen').style.display = 'block';
+    document.getElementById('final-score').innerText = score;
+    
+    const badge = document.getElementById('badge-text');
+    if (score === 20) {
+      badge.innerText = '🏆 PERFECT SCORE! You are a Spelling Superstar!';
+    } else if (score >= 15) {
+      badge.innerText = '🥇 AMAZING WORK! Super Speller!';
+    } else if (score >= 10) {
+      badge.innerText = '🥈 GOOD JOB! Keep Practicing!';
+    } else {
+      badge.innerText = '💪 NICE TRY! Practice makes perfect!';
+    }
+  }
+
+  function restartGame() {
+    currentIndex = 0;
+    score = 0;
+    document.getElementById('score').innerText = score;
+    document.getElementById('play-screen').style.display = 'block';
+    document.getElementById('end-screen').style.display = 'none';
+    loadQuestion();
+  }
+
+  // Initialize
+  loadQuestion();
+</script>
+</body>
+</html>
